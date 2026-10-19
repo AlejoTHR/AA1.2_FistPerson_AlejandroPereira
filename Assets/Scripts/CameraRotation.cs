@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,9 +8,9 @@ public class CameraRotation : MonoBehaviour
     public InputSystem_Actions _input;
 
     [Header("ROTATE")]
-    private Vector3 MousePos;
+    private float MousePos;
+    private float LookAngleMax = 65;
     public Transform _cameraTrsfm;
-
 
     private void Start()
     {
@@ -18,22 +19,27 @@ public class CameraRotation : MonoBehaviour
         _input.Enable();
 
     }
-
-
     private void Update()
     {
         // GET MOUSE POSITION
-        MousePos =  Mouse.current.delta.ReadValue();
-        
-        // CAMERA ROTATION EQUAL TO MOUSEPOS
-        _cameraTrsfm.Rotate(new Vector3(-MousePos.y, transform.localEulerAngles.y,0));
+        MousePos = - Mouse.current.delta.ReadValue().y;
 
+        if (_cameraTrsfm.localEulerAngles.x > LookAngleMax)
+        {
+            _cameraTrsfm.localEulerAngles = new Vector3(LookAngleMax, 0, 0);
+        }
 
+    }
+    private void LateUpdate()
+    {
+        // ROTATE CAMERA
+        _cameraTrsfm.Rotate(MousePos, 0, 0);
 
 
 
     }
 
+    
 
 
 

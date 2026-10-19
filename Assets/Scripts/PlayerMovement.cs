@@ -1,6 +1,5 @@
-using System.Runtime.ExceptionServices;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -8,11 +7,10 @@ public class PlayerMovement : MonoBehaviour
     // GET INPUT SYSTEM
     public InputSystem_Actions _input;
 
-    private Rigidbody _rb;
-
     [Header("MOVEMENT")]
-    public Vector2 _Direction;
+    private Vector3 MousePos;
     public float WalkSpeed;
+
 
 
     private void Start()
@@ -20,22 +18,39 @@ public class PlayerMovement : MonoBehaviour
         // ENABLE INPUT SYSTEM
         _input = new InputSystem_Actions();
         _input.Enable();
-
-        _rb = GetComponent<Rigidbody>();
-
     }
 
     private void Update()
     {
-        _Direction = _input.Player.Move.ReadValue<Vector2>().normalized;
+        // GET MOUSE POSITION
+        MousePos = Mouse.current.delta.ReadValue();
     }
 
     private void FixedUpdate()
     {
+        if (_input.Player.MoveForward.IsPressed())
+        {
+            transform.position += transform.forward * WalkSpeed * Time.deltaTime;
+        }
+        if (_input.Player.MoveBackwards.IsPressed())
+        {
+            transform.position -= transform.forward * WalkSpeed * Time.deltaTime;
+        }
+        if (_input.Player.MoveRight.IsPressed())
+        {
+            transform.position += transform.right * WalkSpeed * Time.deltaTime;
+        }
+        if (_input.Player.MoveLeft.IsPressed())
+        {
+            transform.position -= transform.right * WalkSpeed * Time.deltaTime;
+        }
+    }
 
-        transform.position += new Vector3(_Direction.x, 0 ,_Direction.y) * WalkSpeed * Time.fixedDeltaTime;
 
-
+    private void LateUpdate()
+    {
+        // CAMERA ROTATION RELATIVE TO "MousePos"
+        transform.Rotate(new Vector3(0, MousePos.x, 0));
     }
 
 
