@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -7,11 +8,19 @@ public class PlayerMovement : MonoBehaviour
     // GET INPUT SYSTEM
     public InputSystem_Actions _input;
 
+    public Image _FUEL;
+
     [Header("MOVEMENT")]
     private Vector3 MousePos;
     public float WalkSpeed;
-    public float InitialWalkSpeed = 5f;
     public float JumpForce;
+    public float JetpackForce;
+    public float JetpackFuel;
+    public float JetpackFuelMax;
+    public float JetpackEmptyingMax;
+    public float JetpackFillingTime;
+    public float JetpackEmptyCount;
+    public float JetpackEmptyCountMax;
     public float BackWalkSpeed = 0.5f;
     public float SideWalkSpeed = 0.75f;
 
@@ -37,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
      
      */
 
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody>();
@@ -44,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
         // ENABLE INPUT SYSTEM
         _input = new InputSystem_Actions();
         _input.Enable();
+
+        // STARTS WITH FULL FUEL
+        JetpackFuel = JetpackFuelMax;
     }
 
     private void Update()
@@ -52,11 +65,35 @@ public class PlayerMovement : MonoBehaviour
         MousePos = Mouse.current.delta.ReadValue();
 
 
+        // ALTER UI LIVE
+        _FUEL.fillAmount = JetpackFuel;
+
+
         //PLAYER JUMP
-        if (_input.Player.Jump.WasPerformedThisFrame() && Grounded)
+        if (Grounded && _input.Player.Jump.WasCompletedThisFrame())
         {
             _rb.AddForce(Vector3.up * JumpForce);
+          
         }
+
+        if (_input.Player.Jump.IsPressed() && !Grounded )
+        {
+            JetpackFuel -= Time.deltaTime;
+
+            if (JetpackFuel > 0)
+            {
+                _rb.AddForce(Vector3.up * JetpackForce);
+            }
+            else{
+                JetpackFuel = 0;
+            }
+            
+
+        }
+
+        
+
+
 
     }
 
@@ -70,39 +107,61 @@ public class PlayerMovement : MonoBehaviour
         // "y" = 0
         inputDir.y = 0;
 
-        // SPEED EQUAL TO SPEED
-        WalkSpeed = InitialWalkSpeed;
-
         //SIDEWARDS | SPEED EQUALS TO 75%
         if (inputDir.x != 0){
-            WalkSpeed = InitialWalkSpeed * SideWalkSpeed;
-
+            inputDir *= SideWalkSpeed;
         }
         // BACKWARDS | SPEED EQUALS TO 50%
         if (inputDir.z < 0)
         {
-            WalkSpeed = InitialWalkSpeed * BackWalkSpeed;
+            inputDir *= BackWalkSpeed;
         }
-
 
         // ALTER TRANSFORM FROM WORLD TO LOCAL
         inputDir = transform.TransformDirection(inputDir);
 
         // APLIES INPUT DIR TO TRANSFORM
-        transform.position += inputDir.normalized * WalkSpeed * Time.deltaTime;
+        transform.position += inputDir * WalkSpeed * Time.deltaTime;
+
+
 
 
         // GROUND DETECTION
         RaycastHit hit;
         Physics.SphereCast(transform.position + GroundDetectionDistanceOffset, GroundDetectionRadius, Vector3.down, out hit, GroundDetectionDistance, GroundDetectionLayers);
 
+        // SEND SPHERECAST FOR DETECTION
         if (Physics.SphereCast(transform.position + GroundDetectionDistanceOffset, GroundDetectionRadius, Vector3.down, out hit, GroundDetectionDistance, GroundDetectionLayers))
         {
-
+            // DETETCS GROUND
             Grounded = true;
+
+            JetpackFuel = JetpackFuelMax;
+
+            /*
+            // IF THERE IS STILL FUEL
+            if (JetpackFuel > 0){
+                // "REFILL THE FUEL"
+                // DONT EXEED THE MAX
+                if(JetpackFuel > JetpackFuelMax) JetpackFuel = JetpackFuelMax;
+
+
+            }else if(JetpackFuel <= 0) {
+                // DELAY
+                JetpackEmptyCount += Time.deltaTime;
+                if(JetpackFillingTime >= JetpackEmptyCountMax){
+                    //"REFILL"
+                    JetpackFuel += JetpackFillingTime / Time.deltaTime;
+                }
+
+
+            }
+            */
+
         }
         else
         {
+            
             Grounded = false;
         }
 

@@ -340,7 +340,7 @@ GameObject:
   - component: {fileID: 387852379}
   - component: {fileID: 387852378}
   - component: {fileID: 387852377}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -693,7 +693,7 @@ GameObject:
   - component: {fileID: 499178048}
   - component: {fileID: 499178047}
   - component: {fileID: 499178046}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -805,7 +805,7 @@ GameObject:
   - component: {fileID: 544155944}
   - component: {fileID: 544155943}
   - component: {fileID: 544155942}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -934,7 +934,7 @@ Transform:
   m_GameObject: {fileID: 761499282}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: -6.84, y: 1, z: -12.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -981,15 +981,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d0916059d813104f8cc316b4f38902e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  _FUEL: {fileID: 1753370750}
   WalkSpeed: 5
   JumpForce: 1000
+  JetpackForce: 10
+  JetpackFuel: 0
+  JetpackFuelMax: 1
+  JetpackEmptyingMax: 0
+  JetpackFillingTime: 0.5
+  JetpackEmptyCount: 0
+  JetpackEmptyCountMax: 0.5
+  BackWalkSpeed: 0.5
+  SideWalkSpeed: 0.75
   GroundDetectionRadius: 0.5
   GroundDetectionDistance: 0.6
   GroundDetectionLayers:
     serializedVersion: 2
     m_Bits: 8
-  Jumps: 0
-  JumpsMax: 1
+  Grounded: 0
   GroundDetectionDistanceOffset: {x: 0, y: 1, z: 0}
 --- !u!136 &761499288
 CapsuleCollider:
@@ -1028,9 +1037,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PickUp
   _camera: {fileID: 330585546}
   PickUpDistance: 2
+  PickUpDistanceInitial: 2
+  PickUpDistanceMax: 10
+  PickUpSensibility: 5000
   PickUpLayer:
     serializedVersion: 2
     m_Bits: 64
+  MouseScrollY: 0
 --- !u!1 &804061237
 GameObject:
   m_ObjectHideFlags: 0
@@ -1261,7 +1274,7 @@ GameObject:
   - component: {fileID: 907956780}
   - component: {fileID: 907956779}
   - component: {fileID: 907956778}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1457,6 +1470,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1558943666}
+  - {fileID: 1753370749}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1533,7 +1547,7 @@ GameObject:
   - component: {fileID: 1153433252}
   - component: {fileID: 1153433251}
   - component: {fileID: 1153433250}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1814,7 +1828,7 @@ GameObject:
   - component: {fileID: 1322363636}
   - component: {fileID: 1322363635}
   - component: {fileID: 1322363634}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2165,6 +2179,81 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed622e9d9d10aef4ea2f0a351d660ffe, type: 3}
+--- !u!1 &1753370748
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1753370749}
+  - component: {fileID: 1753370751}
+  - component: {fileID: 1753370750}
+  m_Layer: 5
+  m_Name: FuelBar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1753370749
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753370748}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1000372482}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1753370750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753370748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.068398155, b: 0, a: 0.78431374}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 1
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1753370751
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753370748}
+  m_CullTransparentMesh: 1
 --- !u!1001 &1830509491
 PrefabInstance:
   m_ObjectHideFlags: 0
