@@ -1,5 +1,3 @@
-using System.Net;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,7 +10,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("MOVEMENT")]
     private Vector3 MousePos;
     public float WalkSpeed;
+    public float InitialWalkSpeed = 5f;
     public float JumpForce;
+    public float BackWalkSpeed = 0.5f;
+    public float SideWalkSpeed = 0.75f;
+
     
 
     private Rigidbody _rb;
@@ -21,8 +23,7 @@ public class PlayerMovement : MonoBehaviour
     public float GroundDetectionRadius;
     public float GroundDetectionDistance;
     public LayerMask GroundDetectionLayers;
-    public int Jumps = 0;
-    public int JumpsMax = 2;
+    public bool Grounded = false;
     public Vector3 GroundDetectionDistanceOffset;
 
 
@@ -51,13 +52,12 @@ public class PlayerMovement : MonoBehaviour
         MousePos = Mouse.current.delta.ReadValue();
 
 
-
         //PLAYER JUMP
-        if (_input.Player.Jump.WasPerformedThisFrame() && Jumps < JumpsMax)
+        if (_input.Player.Jump.WasPerformedThisFrame() && Grounded)
         {
-            Jumps++;
             _rb.AddForce(Vector3.up * JumpForce);
         }
+
     }
 
 
@@ -65,28 +65,49 @@ public class PlayerMovement : MonoBehaviour
     {
         // PLAYER MOVEMENT
         Vector3 inputDir = _input.Player.Move.ReadValue<Vector2>();
+       // READ "z" AS "y"
         inputDir.z = inputDir.y;
+        // "y" = 0
         inputDir.y = 0;
+
+        // SPEED EQUAL TO SPEED
+        WalkSpeed = InitialWalkSpeed;
+
+        //SIDEWARDS | SPEED EQUALS TO 75%
+        if (inputDir.x != 0){
+            WalkSpeed = InitialWalkSpeed * SideWalkSpeed;
+
+        }
+        // BACKWARDS | SPEED EQUALS TO 50%
+        if (inputDir.z < 0)
+        {
+            WalkSpeed = InitialWalkSpeed * BackWalkSpeed;
+        }
+
 
         // ALTER TRANSFORM FROM WORLD TO LOCAL
         inputDir = transform.TransformDirection(inputDir);
 
-        // INPUTS DIR TO TRANSFORM
+        // APLIES INPUT DIR TO TRANSFORM
         transform.position += inputDir.normalized * WalkSpeed * Time.deltaTime;
 
 
+        // GROUND DETECTION
         RaycastHit hit;
         Physics.SphereCast(transform.position + GroundDetectionDistanceOffset, GroundDetectionRadius, Vector3.down, out hit, GroundDetectionDistance, GroundDetectionLayers);
 
         if (Physics.SphereCast(transform.position + GroundDetectionDistanceOffset, GroundDetectionRadius, Vector3.down, out hit, GroundDetectionDistance, GroundDetectionLayers))
         {
-            if(Jumps == JumpsMax)
-            {
-                Jumps = 0;
-            }
 
+            Grounded = true;
         }
-        
+        else
+        {
+            Grounded = false;
+        }
+
+
+
 
     }
 
@@ -103,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         //PLAYER JUMP SPHERECAST
-        Gizmos.DrawWireSphere(transform.position+ GroundDetectionDistanceOffset + Vector3.down * GroundDetectionDistance, GroundDetectionRadius);
+        Gizmos.DrawWireSphere(transform.position + GroundDetectionDistanceOffset + Vector3.down * GroundDetectionDistance, GroundDetectionRadius);
 
     }
 

@@ -20,7 +20,7 @@ public class CameraRotation : MonoBehaviour
         _input = new InputSystem_Actions();
         _input.Enable();
 
-        // MOUSE CENTRADO, SE BORRA DE LA PANTALLA
+        // MOUSE IS CENTERED AND ERASED FROM THE SCREEN
         Cursor.lockState = CursorLockMode.Locked;
 
     }
